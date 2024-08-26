@@ -17,3 +17,10 @@ Week Summary (last 7 days):
   Average: 65.5 minutes per day [Note: 459/7] 
 
 Nice to add: ability to set Coding Goals.
+
+
+
+We have 2 tables: CODING_SESSION, APPLICATION_USER    
+The application should get the active user.     
+Inserting into CODING_SESSION necessitates an user that exists in APPLICATION_USER.    
+(Foreign Key)

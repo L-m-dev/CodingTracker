@@ -24,3 +24,14 @@ We have 2 tables: CODING_SESSION, APPLICATION_USER
 The application should get the active user.     
 Inserting into CODING_SESSION necessitates an user that exists in APPLICATION_USER.    
 (Foreign Key)
+
+
+
+
+
+
+
+
+--------
+Code notes
+Using "Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"  for postgres snake_case >>> C# CamelCase mapping

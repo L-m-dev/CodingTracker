@@ -6,8 +6,22 @@ using System.Threading.Tasks;
 
 namespace CodingTrackerApplication
 {
-    public class Validation
+    public static class Validation
     {
-        //This should have validation for Dates;
+        public static bool EndTimeBiggerThanStartTime(DateTime start, DateTime end)
+        {
+            return (start < end);
+        }
+
+        public static bool IsNullOrDefaultDateTime(DateTime value)
+        {
+            if (value == null || value.Date == DateTime.MinValue)
+            {
+                return false;
+            }
+            return true;
+
+        }
     }
 }
+

@@ -9,12 +9,12 @@ namespace DatabaseLayer
 
     public interface ICodingSessionRepository
     {
-        Task<CodingSession> GetByUserIdAsync(int id);
-        Task<CodingSession> GetByCodingSessionIdAsync(int id);
-        Task<int> AddCodingSessionAsync(CodingSession codingSession);
-        Task<int> UpdateCodingSessionAsync(CodingSession codingSession);
+        Task<CodingSessionED> GetByUserIdAsync(int id);
+        Task<CodingSessionED> GetByCodingSessionIdAsync(int id);
+        Task<int> AddCodingSessionAsync(CodingSessionED codingSession);
+        Task<int> UpdateCodingSessionAsync(CodingSessionED codingSession);
         Task<int> DeleteCodingSessionAsync(int id);
-        Task<IEnumerable<CodingSession>> GetAllAsync();
+        Task<IEnumerable<CodingSessionED>> GetAllAsync();
 
 
     }

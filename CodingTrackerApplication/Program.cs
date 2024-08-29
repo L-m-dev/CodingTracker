@@ -5,20 +5,18 @@ using System.Collections.Specialized;
 using DatabaseLayer;
 
 DatabaseConfiguration dbConfig = new();
+CodingSessionRepository codingSessionDb =  new DatabaseLayer.CodingSessionRepository(dbConfig);
 
- DatabaseLayer.CodingSessionRepository codingSessionDb =  new DatabaseLayer.CodingSessionRepository(dbConfig);
+//for now we are using id 20.
+Controller controller = new(20, codingSessionDb);
 
-CodingSession cd = new CodingSession(20, DateTime.Now, DateTime.Now.AddMinutes(100));
-CodingSession cd2 = new CodingSession(20, DateTime.Now, DateTime.Now.AddMinutes(1444));
-CodingSession cd3 = new CodingSession(20, DateTime.Now, DateTime.Now.AddMinutes(100442));
-CodingSession cd4 = new CodingSession(20, DateTime.Now, DateTime.Now.AddMinutes(1024240));
+// Create TEST
+ DateTime exStartTime = DateTime.Now;
+ DateTime exEndTime = DateTime.Now.AddDays(2);
+int returnedCodSessionValue = await controller.CreateCodingSession(exStartTime,exEndTime);
+CodingSessionED getFromDb = await codingSessionDb.GetByCodingSessionIdAsync(returnedCodSessionValue);
 
-
-int returnedCodSessionValue = await codingSessionDb.AddCodingSessionAsync(cd4);
-
-CodingSession getFromDb = await codingSessionDb.GetByCodingSessionIdAsync(returnedCodSessionValue);
-
-CodingSession cd5Update = new CodingSession(20, DateTime.Now.AddHours(-20000), DateTime.Now.AddDays(-1));
+CodingSessionED cd5Update = new CodingSessionED(20, DateTime.Now.AddHours(-20000), DateTime.Now.AddDays(-1));
 cd5Update.CodingSessionId = returnedCodSessionValue;
 int returnEdition = await codingSessionDb.UpdateCodingSessionAsync(cd5Update);
 
@@ -27,8 +25,8 @@ int returnEdition = await codingSessionDb.UpdateCodingSessionAsync(cd5Update);
 
 
 
-IEnumerable<CodingSession> listCodingSession = await codingSessionDb.GetAllAsync();
+IEnumerable<CodingSessionED> listCodingSession = await codingSessionDb.GetAllAsync();
  //int rows = await repo.DeleteProductAsync(20);
  
-  returnedCodSessionValue =  await codingSessionDb.AddCodingSessionAsync(cd);
+  //returnedCodSessionValue =  await codingSessionDb.AddCodingSessionAsync(cd);
 Console.WriteLine("Hello, World!");

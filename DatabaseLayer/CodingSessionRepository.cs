@@ -19,7 +19,7 @@ namespace DatabaseLayer
             _dbconfig = databaseConfiguration;
         }
 
-        public async Task<int> AddCodingSessionAsync(CodingSession codingSession)
+        public async Task<int> AddCodingSessionAsync(CodingSessionED codingSession)
         {
             if (codingSession == null)
             {
@@ -48,39 +48,39 @@ namespace DatabaseLayer
             }
         }
 
-        public async Task<IEnumerable<CodingSession>> GetAllAsync()
+        public async Task<IEnumerable<CodingSessionED>> GetAllAsync()
         {
             using (var connection = _dbconfig.CreateConnection())
             {
                 await connection.OpenAsync();
                 var sql = "SELECT * FROM public.\"CODING_SESSION\"";
-                var codingSessions = await connection.QueryAsync<CodingSession>(sql);
+                var codingSessions = await connection.QueryAsync<CodingSessionED>(sql);
                 return codingSessions;
             }
 
         }
 
-        public async Task<CodingSession> GetByCodingSessionIdAsync(int id)
+        public async Task<CodingSessionED> GetByCodingSessionIdAsync(int id)
         {
             using (var connection = _dbconfig.CreateConnection())
             {
                 await connection.OpenAsync();
                 var sql = "SELECT * FROM public.\"CODING_SESSION\" WHERE coding_session_id = @CodingSessionId";
-                var codingSession = await connection.QueryFirstOrDefaultAsync<CodingSession>(sql, new { CodingSessionId = id });
+                var codingSession = await connection.QueryFirstOrDefaultAsync<CodingSessionED>(sql, new { CodingSessionId = id });
                 return codingSession;
             }
-        }    public async Task<CodingSession> GetByUserIdAsync(int id)
+        }    public async Task<CodingSessionED> GetByUserIdAsync(int id)
         {
             using (var connection = _dbconfig.CreateConnection())
             {
                 await connection.OpenAsync();
                 var sql = "SELECT * FROM public.\"CODING_SESSION\" WHERE user_id = @UserId";
-                var codingSession = await connection.QueryFirstOrDefaultAsync<CodingSession>(sql, new { UserId = id });
+                var codingSession = await connection.QueryFirstOrDefaultAsync<CodingSessionED>(sql, new { UserId = id });
                 return codingSession;
             }
         }
 
-        public async Task<int> UpdateCodingSessionAsync(CodingSession codingSession)
+        public async Task<int> UpdateCodingSessionAsync(CodingSessionED codingSession)
         {
             if (codingSession == null)
             {

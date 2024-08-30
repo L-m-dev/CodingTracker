@@ -10,18 +10,27 @@ namespace CodingTrackerApplication
     {
         public static bool EndTimeBiggerThanStartTime(DateTime start, DateTime end)
         {
-            return (start < end);
+            return (start > end);
         }
 
         public static bool IsNullOrDefaultDateTime(DateTime value)
         {
             if (value == null || value.Date == DateTime.MinValue)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
 
+        }
+        public static bool AreDatesEqual(DateTime start, DateTime end)
+        {
+            if (start.Equals(end))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
+
 

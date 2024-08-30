@@ -69,14 +69,14 @@ namespace DatabaseLayer
                 var codingSession = await connection.QueryFirstOrDefaultAsync<CodingSessionED>(sql, new { CodingSessionId = id });
                 return codingSession;
             }
-        }    public async Task<CodingSessionED> GetByUserIdAsync(int id)
+        }    public async Task<IEnumerable<CodingSessionED>> GetByUserIdAsync(int id)
         {
             using (var connection = _dbconfig.CreateConnection())
             {
                 await connection.OpenAsync();
                 var sql = "SELECT * FROM public.\"CODING_SESSION\" WHERE user_id = @UserId";
-                var codingSession = await connection.QueryFirstOrDefaultAsync<CodingSessionED>(sql, new { UserId = id });
-                return codingSession;
+                var codingSessionList = await connection.QueryAsync<CodingSessionED>(sql, new { UserId = id });
+                return codingSessionList;
             }
         }
 

@@ -22,15 +22,20 @@ namespace CodingTrackerApplication
 
         public async Task<int> CreateCodingSession(DateTime startTime, DateTime endTime)
         {
-            bool validTransaction = true;
-            validTransaction = Validation.EndTimeBiggerThanStartTime(startTime, endTime);
-            validTransaction = Validation.IsNullOrDefaultDateTime(startTime);
-            validTransaction = Validation.IsNullOrDefaultDateTime(endTime);
+            bool invalidTransaction = false;
 
-            if (!validTransaction)
+            //should return false in each of those.
+            invalidTransaction = Validation.EndTimeBiggerThanStartTime(startTime, endTime);
+            invalidTransaction = Validation.IsNullOrDefaultDateTime(startTime);
+            invalidTransaction = Validation.IsNullOrDefaultDateTime(endTime);
+            invalidTransaction = Validation.AreDatesEqual(startTime, endTime);
+
+            // if invalidTransaction == true, should stop.
+            if (invalidTransaction)
             {
-                throw new ArgumentException("Invalid DateTime");
+                throw new ArgumentException("Invalid DateTime Arguments.");
             }
+
             TimeSpan sessionDuration = endTime - startTime;
 
             CodingSessionED codingSession = new CodingSessionED(_userId, startTime, endTime, sessionDuration);
@@ -39,6 +44,12 @@ namespace CodingTrackerApplication
 
             return codingSessionDBId;
 
+        }
+        public async Task<IEnumerable<CodingSessionED>> GetAllCodingSessionById(int id)
+        {
+
+            var codingSessionList = await CodingSessionRepository.GetByUserIdAsync(id);
+            return codingSessionList;
         }
 
 

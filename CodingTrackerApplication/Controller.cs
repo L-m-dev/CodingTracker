@@ -56,15 +56,25 @@ namespace CodingTrackerApplication
         {
 
             Dictionary<string, TimeSpan> codingSessionTotalTimeDict = new Dictionary<string, TimeSpan>();
-            TimeSpan sumOfDuration = TimeSpan.Zero;
-            int dayRange = 1;
+          
+            int[] dayRangeList = { 1, 7, 30, 365 };
 
-            foreach (var codingSession in codingSessionList)
+            for (int i = 0; i < dayRangeList.Length; i++)
             {
-                sumOfDuration += CalculateSessionDuration(codingSession, dayRange);
+                TimeSpan sumOfDuration = TimeSpan.Zero;
+                var average = TimeSpan.Zero;
+                int dayRange = dayRangeList[i];
+                foreach (var codingSession in codingSessionList)
+                {
+                    sumOfDuration += CalculateSessionDuration(codingSession, dayRange);
+                }
+                codingSessionTotalTimeDict.Add($"{dayRangeList[i]}DayTotal", sumOfDuration);
+                if (i > 0)
+                {
+                    average = sumOfDuration / dayRange;
+                    codingSessionTotalTimeDict.Add($"{dayRangeList[i]}DayAverage", average);
+                }
             }
-            codingSessionTotalTimeDict.Add("1 Day", sumOfDuration);
-
             return codingSessionTotalTimeDict;
 
 
@@ -75,36 +85,40 @@ namespace CodingTrackerApplication
         public TimeSpan CalculateSessionDuration(CodingSessionED codingSessionED, int dayRange)
         {
             DateTime endTimeCalculationBoundary = DateTime.Now;
-            DateTime startTimeCalculationBoundary;
-
-            switch (dayRange)
+            DateTime startTimeCalculationBoundary = DateTime.Now.AddDays(-dayRange);
+            //if Session started before the period, the minimum boundary CONTINUES being "1 day ago", as set above.
+            // if Session started after, the boundary becomes the Session's StartTime
+            if (codingSessionED.StartTime >= startTimeCalculationBoundary)
             {
-                case 1:
-                    startTimeCalculationBoundary = DateTime.Now.AddDays(-dayRange);
-                    //if Session started before the period, the minimum boundary CONTINUES being "1 day ago", as set above.
-                    // if Session started after, the boundary becomes the Session's StartTime
-                    if (codingSessionED.StartTime >= startTimeCalculationBoundary)
-                    {
-                        startTimeCalculationBoundary = codingSessionED.StartTime;
-                     }
-                    //if Session ended before boundary period, it shouldn't count.
-                    if (codingSessionED.EndTime < startTimeCalculationBoundary)
-                    {
-                        return TimeSpan.Zero;
-                    }
-                    else
-                    {
-                        endTimeCalculationBoundary = codingSessionED.EndTime;
-                    }
-
-                    return endTimeCalculationBoundary - startTimeCalculationBoundary;
-                default:
-                    break;
+                startTimeCalculationBoundary = codingSessionED.StartTime;
             }
+            //if Session ended before boundary period, it shouldn't count.
+            if (codingSessionED.EndTime < startTimeCalculationBoundary)
+            {
+                return TimeSpan.Zero;
+            }
+            else
+            {
+                endTimeCalculationBoundary = codingSessionED.EndTime;
+            }
+            return endTimeCalculationBoundary - startTimeCalculationBoundary;
 
-            return TimeSpan.MinValue;
-
-
+        }
+        public string FormatTimeSpan(TimeSpan time)
+        {
+            string result = string.Empty;
+            if (time.Days > 0)
+            {
+                if (time.Days == 1) {
+                    result += $"{time.Days} day ";
+                }
+                else
+                {
+                    result += $"{time.Days} days ";
+                }
+            }
+            result+=$"{time.Hours} hours {time.Minutes} minutes {time.Seconds} seconds ";
+            return result;
         }
     }
 }

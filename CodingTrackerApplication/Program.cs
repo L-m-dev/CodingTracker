@@ -38,7 +38,7 @@ CodingSessionStopwatch codingSession = null;
 CodingSessionED cdTest = new CodingSessionED(1, DateTime.Now.AddHours(-12), DateTime.Now.AddHours(-3));
 // should return 3
 CodingSessionED cdTest2 = new CodingSessionED(1, DateTime.Now.AddHours(-27), DateTime.Now.AddHours(-21));
-//should return 0
+//should return 0 but for last 365 days should return 72
 CodingSessionED cdTest3 = new CodingSessionED(1, DateTime.Now.AddHours(-277), DateTime.Now.AddHours(-217));
 TimeSpan ts = controller.CalculateSessionDuration(cdTest, 1);
 TimeSpan ts2 = controller.CalculateSessionDuration(cdTest2, 1);
@@ -88,6 +88,7 @@ while (true)
     if (menuSelection.Equals(menuChoices[0]))
     {
         var codingSessionList = await controller.GetAllCodingSessionById(activeUser.UserId);
+        Dictionary<string, TimeSpan> statistics = controller.GetStatisticsList(codingSessionList);
         var table = new Table();
         table.AddColumn("Coding Session Id");
         table.AddColumn("Start Time");
@@ -104,6 +105,12 @@ while (true)
         }
         AnsiConsole.Write(table);
 
+        var statisticsPanel = new Panel($"Last 24 hours: {statistics.GetValueOrDefault("1DayTotal")}" +
+            $"\nLast week: {controller.FormatTimeSpan(statistics.GetValueOrDefault("7DayTotal"))}    Day average: {controller.FormatTimeSpan(statistics.GetValueOrDefault("7DayAverage"))}" +
+            $"\nLast month: {controller.FormatTimeSpan(statistics.GetValueOrDefault("30DayTotal"))}    Day average: {controller.FormatTimeSpan(statistics.GetValueOrDefault("30DayAverage"))}" +
+            $"\nLast year: {controller.FormatTimeSpan(statistics.GetValueOrDefault("365DayTotal"))}    Day average: {controller.FormatTimeSpan(statistics.GetValueOrDefault("365DayAverage"))}") ;
+        statisticsPanel.Expand = true;
+        AnsiConsole.Write(statisticsPanel);
         if (Continue(continueOrExitMenuChoices))
         {
             continue;

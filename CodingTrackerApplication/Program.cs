@@ -6,7 +6,7 @@ using DatabaseLayer;
 using System.Diagnostics;
 using Spectre.Console;
 
-//load database configuration (address, login, password,...)
+//load database configuration (address, login, password, table)
 DatabaseConfiguration dbConfig = new();
 
 //pass dBConfig object into each database repository class
@@ -33,6 +33,23 @@ Controller controller = new(activeUser.UserId, codingSessionDb);
 
 bool codingSessionInProgress = false;
 CodingSessionStopwatch codingSession = null;
+
+//should return 9
+CodingSessionED cdTest = new CodingSessionED(1, DateTime.Now.AddHours(-12), DateTime.Now.AddHours(-3));
+// should return 3
+CodingSessionED cdTest2 = new CodingSessionED(1, DateTime.Now.AddHours(-27), DateTime.Now.AddHours(-21));
+//should return 0
+CodingSessionED cdTest3 = new CodingSessionED(1, DateTime.Now.AddHours(-277), DateTime.Now.AddHours(-217));
+TimeSpan ts = controller.CalculateSessionDuration(cdTest, 1);
+TimeSpan ts2 = controller.CalculateSessionDuration(cdTest2, 1);
+TimeSpan ts3 = controller.CalculateSessionDuration(cdTest3, 1);
+
+List<CodingSessionED> list = new List<CodingSessionED>();
+list.Add(cdTest);
+list.Add(cdTest2);
+list.Add(cdTest3);
+//should be 12.
+var resultSum = controller.GetStatisticsList(list);
 
 while (true)
 {

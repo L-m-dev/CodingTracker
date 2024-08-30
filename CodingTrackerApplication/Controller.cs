@@ -52,6 +52,59 @@ namespace CodingTrackerApplication
             return codingSessionList;
         }
 
+        public Dictionary<string, TimeSpan> GetStatisticsList(IEnumerable<CodingSessionED> codingSessionList)
+        {
 
+            Dictionary<string, TimeSpan> codingSessionTotalTimeDict = new Dictionary<string, TimeSpan>();
+            TimeSpan sumOfDuration = TimeSpan.Zero;
+            int dayRange = 1;
+
+            foreach (var codingSession in codingSessionList)
+            {
+                sumOfDuration += CalculateSessionDuration(codingSession, dayRange);
+            }
+            codingSessionTotalTimeDict.Add("1 Day", sumOfDuration);
+
+            return codingSessionTotalTimeDict;
+
+
+        }
+
+        //dayCount is the days to calculate.
+        //passing the argument 7 will return how much time was spent last 7 days.
+        public TimeSpan CalculateSessionDuration(CodingSessionED codingSessionED, int dayRange)
+        {
+            DateTime endTimeCalculationBoundary = DateTime.Now;
+            DateTime startTimeCalculationBoundary;
+
+            switch (dayRange)
+            {
+                case 1:
+                    startTimeCalculationBoundary = DateTime.Now.AddDays(-dayRange);
+                    //if Session started before the period, the minimum boundary CONTINUES being "1 day ago", as set above.
+                    // if Session started after, the boundary becomes the Session's StartTime
+                    if (codingSessionED.StartTime >= startTimeCalculationBoundary)
+                    {
+                        startTimeCalculationBoundary = codingSessionED.StartTime;
+                     }
+                    //if Session ended before boundary period, it shouldn't count.
+                    if (codingSessionED.EndTime < startTimeCalculationBoundary)
+                    {
+                        return TimeSpan.Zero;
+                    }
+                    else
+                    {
+                        endTimeCalculationBoundary = codingSessionED.EndTime;
+                    }
+
+                    return endTimeCalculationBoundary - startTimeCalculationBoundary;
+                default:
+                    break;
+            }
+
+            return TimeSpan.MinValue;
+
+
+        }
     }
 }

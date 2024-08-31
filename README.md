@@ -14,7 +14,8 @@ We have 2 tables: CODING_SESSION, APPLICATION_USER
 The application creates a new default user if there's none existing.   
 Inserting into CODING_SESSION necessitates an existing user record in APPLICATION_USER.        
 (Foreign Key)     
-![console](https://github.com/user-attachments/assets/a1767a41-a3f3-4a40-9d94-13633c0a180b)  
+ ![console](https://github.com/user-attachments/assets/d2f1dff2-295b-48bc-9abb-299862f7309e)
+
 ![console2](https://github.com/user-attachments/assets/763b81ce-5e52-4343-8356-adbb27069ab8)  
 
 --------

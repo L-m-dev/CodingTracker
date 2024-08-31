@@ -28,28 +28,8 @@ if (activeUser == null)
 }
 Controller controller = new(activeUser.UserId, codingSessionDb);
 
-//await controller.CreateCodingSession(DateTime.Now, DateTime.Now.AddDays(20));
-//await controller.CreateCodingSession(DateTime.Now.AddHours(3), DateTime.Now.AddDays(55));
-
 bool codingSessionInProgress = false;
 CodingSessionStopwatch codingSession = null;
-
-//should return 9
-CodingSessionED cdTest = new CodingSessionED(1, DateTime.Now.AddHours(-12), DateTime.Now.AddHours(-3));
-// should return 3
-CodingSessionED cdTest2 = new CodingSessionED(1, DateTime.Now.AddHours(-27), DateTime.Now.AddHours(-21));
-//should return 0 but for last 365 days should return 72
-CodingSessionED cdTest3 = new CodingSessionED(1, DateTime.Now.AddHours(-277), DateTime.Now.AddHours(-217));
-TimeSpan ts = controller.CalculateSessionDuration(cdTest, 1);
-TimeSpan ts2 = controller.CalculateSessionDuration(cdTest2, 1);
-TimeSpan ts3 = controller.CalculateSessionDuration(cdTest3, 1);
-
-List<CodingSessionED> list = new List<CodingSessionED>();
-list.Add(cdTest);
-list.Add(cdTest2);
-list.Add(cdTest3);
-//should be 12.
-var resultSum = controller.GetStatisticsList(list);
 
 while (true)
 {
@@ -75,10 +55,10 @@ while (true)
     menuChoices = menuChoices.Where(choice => !string.IsNullOrEmpty(choice)).ToArray();
 
     // HUD START
-    var mainPanel = new Panel("Hello, this is the Coding Tracker.\nYou will be able to track how much time was spent in an activity or start a new recording in real time.");
+    var mainPanel = new Panel("Coding Tracker.\nYou will be able to track how much time was spent coding or start a new session tracker in real time.");
     mainPanel.Expand = true;
     AnsiConsole.Write(mainPanel);
-
+    AnsiConsole.WriteLine();
 
     var menuSelection = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
@@ -89,28 +69,36 @@ while (true)
     {
         var codingSessionList = await controller.GetAllCodingSessionById(activeUser.UserId);
         Dictionary<string, TimeSpan> statistics = controller.GetStatisticsList(codingSessionList);
-        var table = new Table();
-        table.AddColumn("Coding Session Id");
-        table.AddColumn("Start Time");
-        table.AddColumn("End Time");
-        table.AddColumn("Session Duration (HH-MM-SS)");
-
-        if (!codingSessionList.Equals(null))
+        if (codingSessionList.Count() > 0)
         {
-            foreach (var cs in codingSessionList)
+            var table = new Table();
+            table.AddColumn("Coding Session Id");
+            table.AddColumn("Start Time");
+            table.AddColumn("End Time");
+            table.AddColumn("Session Duration (DD-HH-MM-SS)");
+
+            if (!codingSessionList.Equals(null))
             {
-                table.AddRow(cs.CodingSessionId.ToString(), cs.StartTime.ToString(), cs.EndTime.ToString(), cs.SessionDuration.ToString(@"hh\:mm\:ss"));
+                foreach (var cs in codingSessionList)
+                {
+                    table.AddRow(cs.CodingSessionId.ToString(), cs.StartTime.ToString(), cs.EndTime.ToString(), cs.SessionDuration.ToString(@"dd\:hh\:mm\:ss"));
+                }
+
             }
+            AnsiConsole.Write(table);
 
+            var statisticsPanel = new Panel($"Last 24 hours: {statistics.GetValueOrDefault("1DayTotal")}" +
+                $"\nLast week: {controller.FormatTimeSpan(statistics.GetValueOrDefault("7DayTotal"))}    Average per day: {controller.FormatTimeSpan(statistics.GetValueOrDefault("7DayAverage"))}" +
+                $"\nLast month: {controller.FormatTimeSpan(statistics.GetValueOrDefault("30DayTotal"))}    Average per day: {controller.FormatTimeSpan(statistics.GetValueOrDefault("30DayAverage"))}" +
+                $"\nLast year: {controller.FormatTimeSpan(statistics.GetValueOrDefault("365DayTotal"))}    Average per day: {controller.FormatTimeSpan(statistics.GetValueOrDefault("365DayAverage"))}");
+            statisticsPanel.Expand = true;
+            AnsiConsole.Write(statisticsPanel);
         }
-        AnsiConsole.Write(table);
-
-        var statisticsPanel = new Panel($"Last 24 hours: {statistics.GetValueOrDefault("1DayTotal")}" +
-            $"\nLast week: {controller.FormatTimeSpan(statistics.GetValueOrDefault("7DayTotal"))}    Day average: {controller.FormatTimeSpan(statistics.GetValueOrDefault("7DayAverage"))}" +
-            $"\nLast month: {controller.FormatTimeSpan(statistics.GetValueOrDefault("30DayTotal"))}    Day average: {controller.FormatTimeSpan(statistics.GetValueOrDefault("30DayAverage"))}" +
-            $"\nLast year: {controller.FormatTimeSpan(statistics.GetValueOrDefault("365DayTotal"))}    Day average: {controller.FormatTimeSpan(statistics.GetValueOrDefault("365DayAverage"))}") ;
-        statisticsPanel.Expand = true;
-        AnsiConsole.Write(statisticsPanel);
+        else
+        {
+            AnsiConsole.WriteLine("Found no coding sessions. Start a new one!");
+            AnsiConsole.WriteLine();
+        }
         if (Continue(continueOrExitMenuChoices))
         {
             continue;
@@ -123,7 +111,7 @@ while (true)
     }
     else if (menuSelection.Equals(menuChoices[1]))
     {
-        string input = AnsiConsole.Prompt(new TextPrompt<string>("Enter date in the format YYYY-MM-DD HH:MM"));
+        string input = AnsiConsole.Prompt(new TextPrompt<string>("Enter Start Time in the format YYYY-MM-DD HH:MM."));
         DateTime startTime;
         DateTime endTime;
         bool success = false;
@@ -131,15 +119,15 @@ while (true)
         while (!(success = DateTime.TryParse(input, out startTime)))
         {
             AnsiConsole.WriteLine("Invalid format. Try again.");
-            input = AnsiConsole.Prompt(new TextPrompt<string>("Enter date in the format YYYY-MM-DD HH:MM"));
+            input = AnsiConsole.Prompt(new TextPrompt<string>("Enter Start Time in the format YYYY-MM-DD HH:MM."));
         }
         success = false;
 
-        input = AnsiConsole.Prompt(new TextPrompt<string>("Enter date in the format YYYY-MM-DD HH:MM"));
+        input = AnsiConsole.Prompt(new TextPrompt<string>("Enter End Time in the format YYYY-MM-DD HH:MM."));
         while (!(success = DateTime.TryParse(input, out endTime)))
         {
             AnsiConsole.WriteLine("Invalid format. Try again.");
-            input = AnsiConsole.Prompt(new TextPrompt<string>("Enter date in the format YYYY-MM-DD HH:MM"));
+            input = AnsiConsole.Prompt(new TextPrompt<string>("Enter End Time in the format YYYY-MM-DD HH:MM."));
         }
         try
         {
@@ -151,7 +139,8 @@ while (true)
             AnsiConsole.WriteLine("Error, transaction failed.");
             AnsiConsole.WriteLine(e.Message);
         }
-
+        AnsiConsole.WriteLine();
+        AnsiConsole.WriteLine();
         if (Continue(continueOrExitMenuChoices))
         {
             continue;
@@ -209,8 +198,10 @@ while (true)
         {
             AnsiConsole.WriteLine("No coding session in progress");
         }
-
-
+    }
+    else if (menuSelection.Equals(menuChoices[3]))
+    {
+        break;
     }
 }
 
@@ -228,24 +219,4 @@ bool Continue(string[] choiceArray)
         return false;
     }
 }
-{
-
-}
-//int returnedCodSessionValue = await controller.CreateCodingSession(exStartTime, exEndTime);
-
-//CodingSessionED getFromDb = await codingSessionDb.GetByCodingSessionIdAsync(returnedCodSessionValue);
-
-CodingSessionED cd5Update = new CodingSessionED(20, DateTime.Now.AddHours(-20000), DateTime.Now.AddDays(-1));
-//cd5Update.CodingSessionId = returnedCodSessionValue;
-int returnEdition = await codingSessionDb.UpdateCodingSessionAsync(cd5Update);
-
-
-
-
-
-
-IEnumerable<CodingSessionED> listCodingSession = await codingSessionDb.GetAllAsync();
-//int rows = await repo.DeleteProductAsync(20);
-
-//returnedCodSessionValue =  await codingSessionDb.AddCodingSessionAsync(cd);
-Console.WriteLine("Hello, World!");
+  

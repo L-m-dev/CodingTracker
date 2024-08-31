@@ -1,36 +1,21 @@
 # CodingTracker  
 
-The user adds their time spent 'coding' - or any other task - and the application should store and calculate total time and categorize entries.   
+Application for logging time spent in an activity.
+The user adds their time spent 'coding' - or any other task - and the application records the date and duration to a database.    
+Users can see the history and statistics over a period of time - 1 day, 7 days, 30 days, 365 days.   
 
-The application should utilize:  
+The application utilizes:  
 1. Dapper ORM
 2. Spectre Console
-3. Postgres
+3. Postgres Database    
 4. Microsoft inbuilt ConfigurationManager
 
-Validation should be added, refusing empty entries or invalid dates.        
-Additionally, a real time tracker could be added: the user starts() a Stopwatch and when he's finished coding, he calls stop() and a new record with startDate and stopDate and other calculated fields is added to the program.   
-Users should be able to see Total Time and Daily Average Time over a period - month, week.    
-Example:   
-Week Summary (last 7 days): 
-  Total: 459 minutes
-  Average: 65.5 minutes per day [Note: 459/7] 
-
-Nice to add: ability to set Coding Goals.
-
-
-
-We have 2 tables: CODING_SESSION, APPLICATION_USER    
-The application should get the active user.     
-Inserting into CODING_SESSION necessitates an user that exists in APPLICATION_USER.    
-(Foreign Key)
-
-
-
-
-
-
-
+We have 2 tables: CODING_SESSION, APPLICATION_USER        
+The application creates a new default user if there's none existing.   
+Inserting into CODING_SESSION necessitates an existing user record in APPLICATION_USER.        
+(Foreign Key)     
+![console](https://github.com/user-attachments/assets/a1767a41-a3f3-4a40-9d94-13633c0a180b)  
+![console2](https://github.com/user-attachments/assets/763b81ce-5e52-4343-8356-adbb27069ab8)  
 
 --------
 Code notes

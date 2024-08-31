@@ -19,5 +19,6 @@ Inserting into CODING_SESSION necessitates an existing user record in APPLICATIO
 ![console2](https://github.com/user-attachments/assets/763b81ce-5e52-4343-8356-adbb27069ab8)  
 
 --------
-Code notes
-Using "Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"  for postgres snake_case >>> C# CamelCase mapping
+Code hints        
+
+Using "Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;"  enables postgres snake_case to C# CamelCase mapping
